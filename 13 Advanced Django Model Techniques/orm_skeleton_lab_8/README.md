@@ -1,5 +1,6 @@
 
 1.	Restaurant
+
 In the main_app create a model called "Restaurant" with the following fields:
 •	name
 o	A character field.
