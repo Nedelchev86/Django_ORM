@@ -60,15 +60,61 @@ from main_app.models import Restaurant, Menu
 # except ValidationError as e:
 #     print(f"Validation Error: {e}")
 
-invalid_menu = Menu(
-    name="Incomplete Menu",
-    description="** Appetizers: **\nSpinach and Artichoke Dip",
-    restaurant=Restaurant.objects.first(),
-)
+# invalid_menu = Menu(
+#     name="Incomplete Menu",
+#     description="** Appetizers: **\nSpinach and Artichoke Dip",
+#     restaurant=Restaurant.objects.first(),
+# )
+#
+# try:
+#     invalid_menu.full_clean()
+#     invalid_menu.save()
+#     print("Invalid Menu saved successfully!")
+# except ValidationError as e:
+#     print(f"Validation Error: {e}")
 
-try:
-    invalid_menu.full_clean()
-    invalid_menu.save()
-    print("Invalid Menu saved successfully!")
-except ValidationError as e:
-    print(f"Validation Error: {e}")
+# from main_app.models import Restaurant, RestaurantReview
+# from django.core.exceptions import ValidationError
+#
+# restaurant1 = Restaurant.objects.create(name="Restaurant A", location="123 Main St.", description="A cozy restaurant", rating=4.88)
+# restaurant2 = Restaurant.objects.create(name="Restaurant B", location="456 Elm St.",  description="Charming restaurant", rating=3.59)
+#
+# RestaurantReview.objects.create(reviewer_name="Bob", restaurant=restaurant1, review_content="Good experience overall.", rating=4)
+# RestaurantReview.objects.create(reviewer_name="Aleks", restaurant=restaurant1, review_content="Great food and service!", rating=5)
+# RestaurantReview.objects.create(reviewer_name="Charlie", restaurant=restaurant2, review_content="It was ok!", rating=2)
+#
+# duplicate_review = RestaurantReview(reviewer_name="Aleks", restaurant=restaurant1, review_content="Another great meal!", rating=5)
+#
+# try:
+#     duplicate_review.full_clean()
+#     duplicate_review.save()
+# except ValidationError as e:
+#     print(f"Validation Error: {e}")
+#
+#
+# print("All Restaurant Reviews:")
+# for review in RestaurantReview.objects.all():
+#     print(f"Reviewer: {review.reviewer_name}, Rating: {review.rating}, Restaurant: {review.restaurant.name}")
+
+
+# from main_app.models import Restaurant, RegularRestaurantReview, FoodCriticRestaurantReview
+#
+# restaurant1 = Restaurant.objects.create(name="Restaurant A", location="123 Main St.", description="A cozy restaurant", rating=4.88)
+# RegularRestaurantReview.objects.create(reviewer_name="Bob", restaurant=restaurant1, review_content="Good experience overall.", rating=4)
+# RegularRestaurantReview.objects.create(reviewer_name="Aleks", restaurant=restaurant1, review_content="Great food and service!", rating=5)
+#
+# duplicate_review = RegularRestaurantReview(reviewer_name="Aleks", restaurant=restaurant1, review_content="Another great meal!", rating=5)
+#
+# try:
+#     duplicate_review.full_clean()
+#     duplicate_review.save()
+# except ValidationError as e:
+#     print(f"Validation Error: {e}")
+#
+# print("Regular Restaurant Review:")
+# print(f"Model Name: {RegularRestaurantReview._meta.verbose_name}")
+# print(f"Model Plural Name: {RegularRestaurantReview._meta.verbose_name_plural}")
+#
+# print("Food Critic Restaurant Review:")
+# print(f"Model Name: {FoodCriticRestaurantReview._meta.verbose_name}")
+# print(f"Model Plural Name: {FoodCriticRestaurantReview._meta.verbose_name_plural}")
