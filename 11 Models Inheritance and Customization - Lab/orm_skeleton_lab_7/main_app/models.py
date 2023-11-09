@@ -20,3 +20,29 @@ class Bird(Animal):
 
 class Reptile(Animal):
     scale_type = models.CharField(max_length=50)
+
+
+class Employee(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=10)
+
+    class Meta:
+        abstract=True
+
+
+SPECIALITIES = (
+    ("Mammals", "Mammals"),
+    ("Birds", "Birds"),
+    ("Reptiles", "Reptiles"),
+    ("Others", "Others")
+)
+
+
+class ZooKeeper(Employee):
+    specialty = models.CharField(max_length=10, choices=SPECIALITIES)
+    managed_animals = models.ManyToManyField("Animal")
+
+
+class Veterinarian (Employee):
+    license_number = models.CharField(max_length=10)
