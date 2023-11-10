@@ -8,6 +8,7 @@ def validate_specialities(value):
     if value not in ["Mammals", "Birds", "Reptiles", "Others"]:
         raise ValidationError("Specialty must be a valid choice.")
 
+
 class Animal(models.Model):
     name = models.CharField(max_length=100)
     species = models.CharField(max_length=100)
@@ -62,5 +63,23 @@ class Veterinarian (Employee):
 
 class ZooDisplayAnimal(Animal):
 
+    def extra_info(self):
+        result = ""
+        if hasattr(self, "mammal"):
+            result = f"Its fur color is {self.mammal.fur_color}."
+        elif hasattr(self, "bird"):
+            result = f"Its wingspan is {self.bird.wing_span} cm."
+        elif hasattr(self, "reptile"):
+            result = f"Its scale type is {self.reptile.scale_type}."
+        return result
+
+    def display_info(self):
+        return f"Meet {self.name}! It's {self.species} and it's born {self.birth_date}. It makes a noise like '{self.sound}'!{self.extra_info()}"
+
+    def is_endangered(self):
+        return self.species in ["Cross River Gorilla", "Orangutan", "Green Turtle"]
+
     class Meta:
         proxy = True
+
+
