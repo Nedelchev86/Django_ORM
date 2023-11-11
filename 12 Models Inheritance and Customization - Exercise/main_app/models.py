@@ -1,89 +1,159 @@
 from datetime import timedelta
 
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator
 from django.db import models
-
-# Create your models here.
 
 
 class BaseCharacter(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(
+        max_length=100,
+    )
+
     description = models.TextField()
 
     class Meta:
-        abstract: True
+        abstract = True
 
 
 class Mage(BaseCharacter):
-    elemental_power = models.CharField(max_length=100)
-    spellbook_type = models.CharField(max_length=100)
+    elemental_power = models.CharField(
+        max_length=100
+    )
+
+    spellbook_type = models.CharField(
+        max_length=100
+    )
 
 
 class Assassin(BaseCharacter):
-    weapon_type = models.CharField(max_length=100)
-    assassination_technique = models.CharField(max_length=100)
+    weapon_type = models.CharField(
+        max_length=100
+    )
+
+    assassination_technique = models.CharField(
+        max_length=100
+    )
 
 
 class DemonHunter(BaseCharacter):
-    weapon_type = models.CharField(max_length=100)
-    demon_slaying_ability = models.CharField(max_length=100)
+    weapon_type = models.CharField(
+        max_length=100
+    )
+
+    demon_slaying_ability = models.CharField(
+        max_length=100
+    )
 
 
 class TimeMage(Mage):
-    time_magic_mastery = models.CharField(max_length=100)
-    temporal_shift_ability = models.CharField(max_length=100)
+    time_magic_mastery = models.CharField(
+        max_length=100
+    )
+
+    temporal_shift_ability = models.CharField(
+        max_length=100
+    )
 
 
 class Necromancer(Mage):
-    raise_dead_ability = models.CharField(max_length=100)
+    raise_dead_ability = models.CharField(
+        max_length=100
+    )
 
 
 class ViperAssassin(Assassin):
-    venomous_strikes_mastery = models.CharField(max_length=100)
-    venomous_bite_ability = models.CharField(max_length=100)
+    venomous_strikes_mastery = models.CharField(
+        max_length=100
+    )
+
+    venomous_bite_ability = models.CharField(
+        max_length=100
+    )
 
 
 class ShadowbladeAssassin(Assassin):
-    shadowstep_ability = models.CharField(max_length=100)
+    shadowstep_ability = models.CharField(
+        max_length=100
+    )
 
 
 class VengeanceDemonHunter(DemonHunter):
-    vengeance_mastery = models.CharField(max_length=100)
-    retribution_ability = models.CharField(max_length=100)
+    vengeance_mastery = models.CharField(
+        max_length=100
+    )
+
+    retribution_ability = models.CharField(
+        max_length=100
+    )
 
 
 class FelbladeDemonHunter(DemonHunter):
-    felblade_ability = models.CharField(max_length=100)
+    felblade_ability = models.CharField(
+        max_length=100
+    )
 
 
 class UserProfile(models.Model):
-    username = models.CharField(max_length=70, unique=True)
-    email = models.EmailField(unique=True)
-    bio = models.TextField(null=True, blank=True)
+    username = models.CharField(
+        max_length=70,
+        unique=True,
+    )
+
+    email = models.EmailField(
+        unique=True,
+    )
+
+    bio = models.TextField(
+        null=True,
+        blank=True,
+    )
 
 
 class Message(models.Model):
-    sender = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="sent_messages")
-    receiver = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="received_messages")
-    content = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    is_read = models.BooleanField(default=False)
+    sender = models.ForeignKey(
+        to=UserProfile,
+        related_name="sent_messages",
+        on_delete=models.CASCADE,
+    )
 
-    def mark_as_read(self):
+    receiver = models.ForeignKey(
+        to=UserProfile,
+        related_name="received_messages",
+        on_delete=models.CASCADE,
+    )
+
+    content = models.TextField()
+
+    timestamp = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    is_read = models.BooleanField(
+        default=False,
+    )
+
+    def mark_as_read(self) -> None:
         self.is_read = True
 
-    def mark_as_unread(self):
+    def mark_as_unread(self) -> None:
         self.is_read = False
 
-    def reply_to_message(self, reply_content, receiver):
-        new_message = Message.objects.create(sender=self.receiver, receiver= receiver, content=reply_content)
-        new_message.save()
-        return new_message
+    # by task messages should be saved
+    def reply_to_message(self, reply_content: str, receiver: UserProfile) -> object:
+        return Message(
+            sender=self.receiver,
+            receiver=receiver,
+            content=reply_content
+        )
 
-    def forward_message(self, sender, receiver):
-        message = Message.objects.create(sender=sender, receiver=receiver, content=self.content)
-        message.save()
-        return message
+    # by task messages should be saved
+    def forward_message(self, sender: UserProfile, receiver: UserProfile) -> object:
+        return Message(
+            sender=sender,
+            receiver=receiver,
+            content=self.content,
+        )
 
 
 class StudentIDField(models.PositiveIntegerField):
@@ -91,11 +161,14 @@ class StudentIDField(models.PositiveIntegerField):
         try:
             return int(value)
         except ValueError:
-            raise ValidationError("ID must be an digit")
+            pass  # better raise ValidationError
 
 
 class Student(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(
+        max_length=100,
+    )
+
     student_id = StudentIDField()
 
 
@@ -113,27 +186,49 @@ class MaskedCreditCardField(models.CharField):
 
         if len(value) != 16:
             raise ValidationError("The card number must be exactly 16 characters long")
+
         return f"****-****-****-{value[-4:]}"
 
 
 class CreditCard(models.Model):
-    card_owner = models.CharField(max_length=100)
+    card_owner = models.CharField(
+        max_length=100,
+    )
+
     card_number = MaskedCreditCardField()
 
 
 class Hotel(models.Model):
-    name = models.CharField(max_length=100)
-    address = models.CharField(max_length=200)
+    name = models.CharField(
+        max_length=100,
+    )
+
+    address = models.CharField(
+        max_length=200,
+    )
 
 
 class Room(models.Model):
-    hotel = models.ForeignKey(to=Hotel, on_delete=models.CASCADE)
-    number = models.CharField(max_length=100, unique=True)
-    capacity = models.PositiveIntegerField()
-    total_guests = models.PositiveIntegerField()
-    price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
+    hotel = models.ForeignKey(
+        to=Hotel,
+        on_delete=models.CASCADE,
+    )
 
-    def clear(self):
+    number = models.CharField(
+        max_length=100,
+        unique=True,
+    )
+
+    capacity = models.PositiveIntegerField()
+
+    total_guests = models.PositiveIntegerField()
+
+    price_per_night = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+    )
+
+    def clean(self) -> None:
         if self.total_guests > self.capacity:
             raise ValidationError("Total guests are more than the capacity of the room")
 
@@ -146,20 +241,26 @@ class Room(models.Model):
 
 
 class BaseReservation(models.Model):
+
     class Meta:
         abstract = True
 
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.ForeignKey(
+        to=Room,
+        on_delete=models.CASCADE,
+    )
+
     start_date = models.DateField()
+
     end_date = models.DateField()
 
-    def reservation_period(self):
+    def reservation_period(self) -> int:
         return (self.end_date - self.start_date).days
 
-    def calculate_total_cost(self):
-        total = self.reservation_period() * self.room.price_per_night
+    def calculate_total_cost(self) -> int:
+        total_cost = self.reservation_period() * self.room.price_per_night
 
-        return round(total, 2)
+        return round(total_cost, 1)
 
     @property
     def is_available(self):
