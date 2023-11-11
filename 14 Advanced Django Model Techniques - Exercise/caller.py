@@ -7,20 +7,38 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "orm_skeleton.settings")
 django.setup()
 
 # Import your models here
-from main_app.models import Customer
+from main_app.models import Customer, Book
 from django.core.exceptions import ValidationError
 # Create queries within functions
 
-customer = Customer(
-    name="Svetlin Nakov",
-    age=1,
-    email="nakov@example",
-    phone_number="+35912345678",
-    website_url="htsatps://nakov.com/"
+# customer = Customer(
+#     name="Svetlin Nakov",
+#     age=1,
+#     email="nakov@example",
+#     phone_number="+35912345678",
+#     website_url="htsatps://nakov.com/"
+# )
+#
+# try:
+#     customer.full_clean()
+#     customer.save()
+# except ValidationError as e:
+#     print('\n'.join(e.messages))
+
+
+book = Book(
+    title="Short Title",
+    description="A book with a short title.",
+    genre="Fiction",
+    author="A",
+    isbn="1234"
 )
 
 try:
-    customer.full_clean()
-    customer.save()
+    book.full_clean()
+    book.save()
+
 except ValidationError as e:
-    print('\n'.join(e.messages))
+    print("Validation Error for Book:")
+    for field, errors in e.message_dict.items():
+        print(f"{field}: {', '.join(errors)}")
