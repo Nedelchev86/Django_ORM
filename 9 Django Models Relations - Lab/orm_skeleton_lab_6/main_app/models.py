@@ -16,3 +16,11 @@ class Subject(models.Model):
     code = models.CharField(max_length=10)
     lecturer = models.ForeignKey(to="Lecturer", on_delete=models.SET_NULL, null=True)
 
+
+class Student(models.Model):
+    student_id = models.CharField(max_length=10, primary_key=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    birth_date = models.DateField()
+    email = models.EmailField(unique=True)
+    subjects = models.ManyToManyField(to="Subject")
