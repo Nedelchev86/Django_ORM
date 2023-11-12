@@ -10,7 +10,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "orm_skeleton.settings")
 django.setup()
 
 # Import your models here
-from main_app.models import Author, Book, Artist, Song, Product, Review, DrivingLicense, Driver
+from main_app.models import Author, Book, Artist, Song, Product, Review, DrivingLicense, Driver, Registration, Car, \
+    Owner
 
 
 # Create queries within functions
@@ -183,9 +184,6 @@ def get_drivers_with_expired_licenses(due_date):
 
     return result
 
-
-
-
 # Create drivers
 # driver1 = Driver.objects.create(first_name="Tanya", last_name="Petrova")
 # driver2 = Driver.objects.create(first_name="Ivan", last_name="Yordanov")
@@ -194,10 +192,42 @@ def get_drivers_with_expired_licenses(due_date):
 # license2 = DrivingLicense.objects.create(license_number="456", issue_date=date(2022, 1, 1), driver=driver2)
 #
 # # Calculate licenses expiration dates
-expiration_dates = calculate_licenses_expiration_dates()
-print(expiration_dates)
+# expiration_dates = calculate_licenses_expiration_dates()
+# print(expiration_dates)
+#
+# # Get drivers with expired licenses
+# drivers_with_expired_licenses = get_drivers_with_expired_licenses(date(2023, 1, 1))
+# for driver in drivers_with_expired_licenses:
+#     print(f"{driver.first_name} {driver.last_name} has to renew their driving license!")
 
-# Get drivers with expired licenses
-drivers_with_expired_licenses = get_drivers_with_expired_licenses(date(2023, 1, 1))
-for driver in drivers_with_expired_licenses:
-    print(f"{driver.first_name} {driver.last_name} has to renew their driving license!")
+
+def register_car_by_owner(owner: Owner):
+    registration = Registration.objects.filter(car__isnull=True).first()
+    car = Car.objects.filter(registration__isnull=True).first()
+
+    car.owner = owner
+    car.registration = registration
+    car.save()
+
+    registration.registration_date = date.today()
+    registration.car = car
+    registration.save()
+
+    return f"Successfully registered {car.model} to {owner.name} with registration number {registration.registration_number}."
+
+
+
+# # Create instances of the Owner model
+# owner1 = Owner.objects.create(name='Ivelin Milchev')
+# owner2 = Owner.objects.create(name='Alice Smith')
+#
+# # Create instances of the Car model and associate them with owners
+# car1 = Car.objects.create(model='Citroen C5', year=2004)
+# car2 = Car.objects.create(model='Honda Civic', year=2021)
+#
+# # Create instances of the Registration model for the cars
+# registration1 = Registration.objects.create(registration_number='TX0044XA')
+# registration2 = Registration.objects.create(registration_number='XYZ789')
+#
+# print(register_car_by_owner(owner1))
+
