@@ -4,17 +4,20 @@ from django.db import models
 # Create your models here.
 
 
-class Director(models.Model):
+class BasePerson(models.Model):
     full_name = models.CharField(max_length=120, validators=[MinLengthValidator(2)])
     birth_date = models.DateField(default='1900-01-01')
     nationality = models.CharField(max_length=50, default="Unknown")
+
+    class Meta:
+        abstract = True
+
+
+class Director(BasePerson):
     years_of_experience = models.SmallIntegerField(validators=[MinValueValidator(0)], default=0)
 
 
-class Actor(models.Model):
-    full_name = models.CharField(max_length=120, validators=[MinLengthValidator(2)])
-    birth_date = models.DateField(default='1900-01-01')
-    nationality = models.CharField(max_length=50, default="Unknown")
+class Actor(BasePerson):
     is_awarded = models.BooleanField(default=False)
     last_updated = models.DateTimeField(auto_now=True)
 
