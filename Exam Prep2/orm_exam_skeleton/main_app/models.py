@@ -1,6 +1,8 @@
 from django.core.validators import MinValueValidator, MinLengthValidator
 from django.db import models
 
+from main_app.custom_manager import CustomProfileManager
+
 
 class Profile(models.Model):
     full_name = models.CharField(max_length=100, validators=[MinLengthValidator(2)])
@@ -10,9 +12,7 @@ class Profile(models.Model):
     is_active = models.BooleanField(default=True)
     creation_date = models.DateTimeField(auto_now_add=True)
 
-    # def get_regular_customers(self):
-    #     profile_with_orders = Profile.objects.all().filter(order__products__gte=2)
-
+    objects = CustomProfileManager()
 
 
 
@@ -26,8 +26,8 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="orders")
+    products = models.ManyToManyField(Product, related_name='orders')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)])
     creation_date = models.DateTimeField(auto_now_add=True)
     is_completed = models.BooleanField(default=False)
