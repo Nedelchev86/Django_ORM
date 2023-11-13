@@ -1,6 +1,10 @@
 from django.core.validators import MinLengthValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 
+
+from main_app.custom_managers import DirectorManager
+
+
 # Create your models here.
 
 
@@ -16,6 +20,7 @@ class BasePerson(models.Model):
 class Director(BasePerson):
     years_of_experience = models.SmallIntegerField(validators=[MinValueValidator(0)], default=0)
 
+    objects = DirectorManager()
 
 class Actor(BasePerson):
     is_awarded = models.BooleanField(default=False)
