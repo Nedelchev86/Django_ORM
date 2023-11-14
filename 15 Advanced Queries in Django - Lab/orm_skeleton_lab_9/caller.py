@@ -1,6 +1,6 @@
 import os
 import django
-from django.db.models import Sum
+
 
 # Set up Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "orm_skeleton.settings")
@@ -8,7 +8,7 @@ django.setup()
 
 # Import your models
 from main_app.models import Product, Category, Customer, Order, OrderProduct
-
+from django.db.models import Sum
 
 # Create and check models
 def add_records_to_database():
@@ -78,8 +78,17 @@ def product_quantity_ordered():
     total_products_ordered = (Product.objects.annotate(total_ordered_quantity=Sum('orderproduct__quantity')).exclude(total_ordered_quantity=None).order_by('-total_ordered_quantity'))
     result = []
     for product in total_products_ordered:
-        result.append(f"Quantity ordered of {product.name}:{product.total_ordered_quantity}")
+        result.append(f"Quantity ordered of {product.name}: {product.total_ordered_quantity}")
     return "\n".join(result)
 
 
-print(product_quantity_ordered())
+def ordered_products_per_customer():
+    prefetched_orders = Order.objects.prefetch_related('orderproduct_set__product__category').order_by('id')
+    result = []
+    for order in prefetched_orders:
+        result.append(f"Order ID: {order.id}, Customer: {order.customer.username}")
+        for order_product in order.orderproduct_set.all():
+            result.append(f"- Product: {order_product.product.name}, Category: {order_product.product.category.name}")
+    return "\n".join(result)
+
+print(ordered_products_per_customer())
